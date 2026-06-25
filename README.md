@@ -35,7 +35,8 @@ customer-churn-prediction/
 │   ├── 02_churn_by_contract.png
 │   ├── 03_tenure_vs_churn.png
 │   ├── 04_charges_vs_churn.png
-│   └── model_comparison.csv
+│   ├── model_comparison.csv
+|   └── dashboard.pdf
 
 ├── .gitignore
 ├── requirements.txt
