@@ -1,235 +1,144 @@
-# Telco Customer Churn Prediction
+# Customer Churn Prediction
 
-## Overview
+A machine learning project that predicts which telecom customers are likely to cancel their subscription. Built end-to-end: from raw data through cleaning, exploratory analysis, feature engineering, and model comparison — with a focus on handling real-world class imbalance.
 
-This project develops a machine learning solution to predict customer churn for a telecommunications company. The objective is to identify customers who are likely to leave the service, allowing the business to take proactive retention actions.
+---
 
-The project follows a complete machine learning workflow, including:
+## Problem statement
 
-* Data preprocessing
-* Exploratory Data Analysis (EDA)
-* Feature engineering
-* Model training
-* Model evaluation
-* Power BI dashboard visualization
+A telecom company loses revenue every time a customer churns. If we can predict *who* is likely to leave, the business can intervene early with a retention offer. This project answers: **can we predict churn before it happens, and which model does it best?**
 
 ---
 
 ## Dataset
 
-**Dataset:** Telco Customer Churn
-
-The dataset contains customer demographic information, account details, subscribed services, and whether the customer has churned.
-
-### Target Variable
-
-* **Churn**
-
-  * 0 → Customer Stayed
-  * 1 → Customer Churned
+[IBM Telco Customer Churn](https://github.com/IBM/telco-customer-churn-on-icp4d/blob/master/data/Telco-Customer-Churn.csv) — a publicly available dataset with:
+- 7,043 customers
+- 21 features (contract type, tenure, monthly charges, internet service, payment method, etc.)
+- Target variable: `Churn` (Yes / No) — 26.5% of customers churned
 
 ---
 
-## Project Structure
+## Project structure
 
-```text
-ML-PROJECTT/
-│
+```
+customer-churn-prediction/
 ├── Codes/
-│   ├── pipeline.ipynb
-│   ├── train_models.ipynb
-│   └── visuals.ipynb
-│
-├── dashboard/
-│   ├── model_comparison_visuals.pbix
-│   └── dashboard.pdf
-│
+|   ├── 01_explore_and_clean.py
+|   ├── 02_visualize.py
+|   └── 03_train_models.py
 ├── data/
-│   ├── Telco-Customer-Churn.csv
-│   ├── telco_churn_clean.csv
-│   └── model_comparison.csv
-│
+│   ├── telco_churn.csv              # raw dataset
+│   └── telco_churn_clean.csv        # cleaned version 
 ├── outputs/
-│   ├── 02_churn.png
-│   ├── 03_churn.png
+│   ├── 01_churn_distribution.png
+│   ├── 02_churn_by_contract.png
+│   ├── 03_tenure_vs_churn.png
 │   ├── 04_charges_vs_churn.png
-│   ├── 05_charges_vs_churn.png
-│   └── 05_tenure_vs_churn.png
-│
+│   └── model_comparison.csv
+
+├── .gitignore
 ├── requirements.txt
 └── README.md
-|__ .gitignore
-ه Ii
 ```
 
 ---
 
-## Machine Learning Pipeline
+## How to run it
 
-### 1. Data Preprocessing
-
-* Missing value handling
-* Duplicate removal
-* Data cleaning
-* Feature encoding using One-Hot Encoding
-* Feature scaling using StandardScaler
-
----
-
-### 2. Exploratory Data Analysis
-
-Visualizations include:
-
-* Churn Distribution
-* Monthly Charges vs Churn
-* Total Charges Analysis
-* Customer Tenure Analysis
-* Correlation Analysis
-
----
-
-### 3. Models
-
-The following classification algorithms were trained and compared:
-
-* Logistic Regression
-* Decision Tree Classifier
-* Gaussian Naive Bayes
-
----
-
-## Evaluation Metrics
-
-Models were evaluated using:
-
-* Accuracy
-* Precision
-* Recall
-* F1 Score
-* Confusion Matrix
-* Classification Report
-
-Because the dataset is imbalanced, **F1 Score** was used as the primary metric for comparing model performance.
-
----
-
-## Power BI Dashboard
-
-The project includes an interactive Power BI dashboard for comparing model performance.
-
-Dashboard features include:
-
-* Model Performance Comparison
-* Accuracy Comparison
-* Precision Comparison
-* Recall Comparison
-* F1 Score Comparison
-* Model Ranking
-
-Power BI file:
-
-```text
-dashboard/model_comparison_visuals.pbix
-```
-
-Dashboard PDF:
-
-```text
-dashboard/dashboard.pdf
-```
-
----
-
-## Technologies Used
-
-### Programming
-
-* Python 3
-
-### Libraries
-
-* pandas
-* NumPy
-* matplotlib
-* seaborn
-* scikit-learn
-
-### Visualization
-
-* Power BI
-
----
-
-## Installation
-
-Clone the repository
-
+**1. Clone the repo**
 ```bash
-git clone https://github.com/a-matahen/ML-PROJECTT.git
+git clone https://github.com/a-matahen/telco-churn-ml
+cd customer-churn-prediction
 ```
 
-Move into the project
-
-```bash
-cd ML-PROJECTT
-```
-
-Install dependencies
-
+**2. Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
+**3. Run the pipeline in order**
+```bash
+python 01_explore_and_clean.py    # clean the data
+python 02_visualize.py            # generate charts
+python 03_train_models.py         # train and evaluate models
+```
+
+All outputs (charts, model comparison table) are saved to the `outputs/` folder.
+
 ---
 
-## How to Run
+## What each script does
 
-1. Open **pipeline.ipynb**
-2. Execute data preprocessing.
-3. Open **train_models.ipynb**
-4. Train and evaluate the machine learning models.
-5. Open **visuals.ipynb**
-6. Generate visualizations.
-7. Open the Power BI dashboard to explore model performance.
+### `01_explore_and_clean.py` — Data cleaning
+- Found that `TotalCharges` was stored as a string type due to 11 hidden blank values (all new customers with zero tenure and no bill yet)
+- Converted `TotalCharges` to numeric and filled blanks with `0` — the correct value for a customer with no charges yet
+- Dropped the `customerID` column (label, not a feature)
+- Encoded the target column: `Yes → 1`, `No → 0`
+
+### `02_visualize.py` — Exploratory analysis
+Produced 4 charts that answer: *what actually drives churn?*
+
+Key finding: **contract type is the strongest predictor of churn**
+
+| Contract type | Churn rate |
+|---|---|
+| Month-to-month | 42.7% |
+| One year | 11.3% |
+| Two year | 2.8% |
+
+Customers on short contracts churn at 15x the rate of customers on long-term contracts. New customers (low tenure) also churn disproportionately — most churn happens in the first 12 months.
+
+### `03_train_models.py` — Model training and evaluation
+- Encoded all categorical features using one-hot encoding
+- Scaled numeric features with `StandardScaler`
+- Split data 80/20 with stratification to preserve the 73/27 class ratio
+- Trained and evaluated 3 models: Logistic Regression, Decision Tree, Naive Bayes
 
 ---
 
 ## Results
 
-The trained models were compared using multiple evaluation metrics to determine the best-performing classifier.
+| Model | Accuracy | Precision | Recall | F1 Score |
+|---|---|---|---|---|
+| **Logistic Regression** | 0.807 | 0.658 | 0.567 | **0.609** |
+| Decision Tree | 0.794 | 0.631 | 0.540 | 0.582 |
+| Naive Bayes | 0.656 | 0.427 | 0.866 | 0.572 |
 
-The comparison includes:
+**Winner: Logistic Regression** — highest F1 score, best overall balance between catching churners and avoiding false alarms.
 
-* Accuracy
-* Precision
-* Recall
-* F1 Score
+### Why F1 score — not accuracy
 
-Results are exported as:
+The dataset is imbalanced: 73% of customers stayed, 27% churned. A model that always predicts "no churn" would achieve 73% accuracy while catching zero actual churners — useless for the business. F1 score penalizes this by combining precision (are your churn predictions correct?) and recall (are you catching all the churners?).
 
-```text
-data/model_comparison.csv
-```
+### The Naive Bayes tradeoff
 
----
-
-## Future Improvements
-
-* Random Forest
-* XGBoost
-* LightGBM
-* Hyperparameter tuning using GridSearchCV
-* Cross-validation
-* Model deployment using Flask or FastAPI
-* Interactive web application using Streamlit
+Naive Bayes has the lowest accuracy (65.6%) but the highest recall (86.6%) — it catches the most churners, at the cost of more false alarms. In a real business context, this might still be the right choice: the cost of missing a churner (lost revenue) is often higher than the cost of a false alarm (sending an unnecessary retention email).
 
 ---
 
-## Author
+## Key takeaways
 
-**Abdalrahman Matahen**
+- Feature engineering matters: fixing the `TotalCharges` dtype bug was a real data quality issue, not just a formatting step
+- Class imbalance changes which metric you optimize for — accuracy alone is misleading
+- Logistic Regression outperformed more complex models (Decision Tree) on this dataset, which is common when features are mostly binary/categorical after encoding
+- Contract type alone could power a simple business rule — customers on month-to-month contracts are the highest-risk segment
 
-AI & Data Science Student
+---
 
-GitHub:
-https://github.com/a-matahen
+## Tech stack
+
+- Python 3.x
+- pandas — data cleaning and manipulation
+- scikit-learn — model training and evaluation
+- matplotlib / seaborn — data visualization
+
+---
+
+## Next steps
+
+- [ ] Apply `class_weight='balanced'` or SMOTE to directly address class imbalance
+- [ ] Add `GridSearchCV` hyperparameter tuning for the Decision Tree
+- [ ] Try Random Forest or XGBoost for comparison
+- [ ] Build a simple prediction API with Flask or FastAPI
+- [ ] Add a feature importance chart for Logistic Regression coefficients
