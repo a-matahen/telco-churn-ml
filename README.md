@@ -58,6 +58,8 @@ ML-PROJECTT/
 │
 ├── requirements.txt
 └── README.md
+|__ .gitignore
+ه Ii
 ```
 
 ---
@@ -225,7 +227,7 @@ data/model_comparison.csv
 
 ## Author
 
-**Abd Matahen**
+**Abdalrahman Matahen**
 
 AI & Data Science Student
 
