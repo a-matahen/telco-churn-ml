@@ -36,6 +36,7 @@ customer-churn-prediction/
 │   ├── 03_tenure_vs_churn.png
 │   ├── 04_charges_vs_churn.png
 │   ├── model_comparison.csv
+|   ├── power_BI_dashbord.pbix
 |   └── dashboard.pdf
 
 ├── .gitignore
